@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>スマホ実寸画像表示</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin: 20px; touch-action: manipulation; }
+        #setup { background: #f9f9f9; padding: 20px; border-radius: 15px; border: 1px solid #ddd; }
+        .guide-circle { 
+            width: 100px; height: 100px; background: #ffd700; border-radius: 50%; 
+            margin: 20px auto; display: flex; align-items: center; justify-content: center; 
+            font-size: 14px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #result-container { display: none; margin-top: 20px; }
+        #display-image { 
+            border: 1px solid #000; display: block; margin: 0 auto;
+            object-fit: fill; /* 指定したサイズいっぱいに広げる */
+        }
+        input[type="range"] { width: 90%; margin: 20px 0; }
+        button { padding: 12px 24px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        .file-input { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="setup">
+        <h2>1. 画像を選んでサイズ調整</h2>
+        
+        <div class="file-input">
+            <input type="file" id="image-selector" accept="image/*">
+        </div>
+
+        <p>手元の「1円玉」を画面に当てて、<br>下の円と同じ大きさになるよう調整してください。</p>
+        <div id="coin" class="guide-circle">1円玉</div>
+        <input type="range" id="scale-slider" min="50" max="350" value="100">
+        
+        <div>
+            <button onclick="showActualSize()">2. 実寸（5.5×9.1cm）で表示</button>
+        </div>
+    </div>
+
+    <div id="result-container">
+        <img id="display-image" src="" alt="実寸表示画像">
+        <p style="color: #666; font-size: 12px;">※ピンチ操作などでズレる場合があります</p>
+        <button style="background: #666;" onclick="location.reload()">最初に戻る</button>
+    </div>
+
+    <script>
+        const slider = document.getElementById('scale-slider');
+        const coin = document.getElementById('coin');
+        const imageSelector = document.getElementById('image-selector');
+        const displayImage = document.getElementById('display-image');
+        const setup = document.getElementById('setup');
+        const resultContainer = document.getElementById('result-container');
+
+        // 1円玉の直径はちょうど20mm
+        const COIN_MM = 20; 
+
+        // スライダーでガイドの大きさを変える
+        slider.oninput = function() {
+            coin.style.width = this.value + 'px';
+            coin.style.height = this.value + 'px';
+        };
+
+        function showActualSize() {
+            if (!imageSelector.files[0]) {
+                alert("画像を選択してください！");
+                return;
+            }
+
+            // 1. 画像ファイルを読み込む
+            const file = imageSelector.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                displayImage.src = e.target.result;
+
+                // 2. 「1mmあたりのピクセル数」を計算
+                const pxPerMm = slider.value / COIN_MM;
+
+                // 3. 55mm x 91mm（名刺サイズ）にサイズを指定
+                // ※縦向き・横向きは画像の比率に合わせず、指定サイズを優先
+                displayImage.style.width = (91 * pxPerMm) + 'px';
+                displayImage.style.height = (55 * pxPerMm) + 'px';
+
+                // 4. 表示の切り替え
+                setup.style.display = 'none';
+                resultContainer.style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
