@@ -55,43 +55,7 @@
         <p style="color: #666; font-size: 12px; margin-top: 20px;">※スマホを縦にしたまま確認してください</p>
     </div>
 
-    <script>
-        const slider = document.getElementById('scale-slider');
-        const coin = document.getElementById('coin');
-        const imageSelector = document.getElementById('image-selector');
-        const displayImage = document.getElementById('display-image');
-        const setup = document.getElementById('setup');
-        const resultContainer = document.getElementById('result-container');
-
-        const COIN_MM = 20; // 1円玉は20mm
-
-        slider.oninput = function() {
-            coin.style.width = this.value + 'px';
-            coin.style.height = this.value + 'px';
-        };
-
-        function showActualSize() {
-            if (!imageSelector.files[0]) {
-                alert("画像を選択してください！");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                displayImage.src = e.target.result;
-
-                const pxPerMm = slider.value / COIN_MM;
-
-                // 横向き名刺（9.1cm x 5.5cm）を90度回転させるため
-                // 表示上の「幅」を5.5cm、「高さ」を9.1cmに設定します
-                displayImage.style.width = (55 * pxPerMm) + 'px';
-                displayImage.style.height = (91 * pxPerMm) + 'px';
-
-                setup.style.display = 'none';
-                resultContainer.style.display = 'block';
-            };
-            reader.readAsDataURL(imageSelector.files[0]);
-        }
-    </script>
+   <script>
+       
 </body>
 </html>
